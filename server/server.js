@@ -12,6 +12,7 @@ app.use(passport.initialize()); // Add this line
 
 // Middleware
 app.use(cors());
+app.set('trust proxy', 1);
 app.use(express.json());
 
 // Connect to MongoDB

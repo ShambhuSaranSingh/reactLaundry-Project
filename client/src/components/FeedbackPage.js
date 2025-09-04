@@ -11,7 +11,7 @@ const FeedbackPage = () => {
   const onSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/feedback', formData);
+      await axios.post('/api/feedback', formData);
       alert('Thank you for your feedback!');
       setFormData({ name: '', email: '', feedback: '', rating: 3 }); // Reset form
     } catch (err) {

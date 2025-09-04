@@ -45,7 +45,7 @@ const SelectItemsPage = () => {
 
     try {
       // Send the complete order details to the backend
-      await axios.post('http://localhost:5000/api/orders', orderDetails);
+      await axios.post('/api/orders', orderDetails);
       alert('Order placed successfully!');
       // Optionally reset the form here
     } catch (err) {

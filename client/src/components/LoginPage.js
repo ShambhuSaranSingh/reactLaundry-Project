@@ -22,7 +22,7 @@ const LoginPage = () => {
     try {
       if (isLoginView) {
         // --- Login Logic ---
-        const res = await axios.post(`http://localhost:5000${endpoint}`, payload);
+        const res = await axios.post(endpoint, payload);
         sessionStorage.setItem('token', res.data.token);
         alert('Login successful!');
         navigate('/');
