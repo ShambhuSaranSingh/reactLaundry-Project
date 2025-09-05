@@ -25,7 +25,7 @@ router.get('/google/callback',
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     // Redirect user to the frontend, passing the token as a query parameter
-    res.redirect(`http://localhost:3000/auth/callback?token=${token}`);
+    res.redirect(`https://reactlaundry-project.netlify.app/auth/callback?token=${token}`);
   }
 );
 
