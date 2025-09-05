@@ -28,7 +28,7 @@ const LoginPage = () => {
         navigate('/');
       } else {
         // --- Register Logic ---
-        await axios.post(`http://localhost:5000${endpoint}`, payload);
+        await axios.post(endpoint, payload);
         alert('Registration successful! Please log in.');
         setIsLoginView(true); // Switch back to login view after successful registration
       }
@@ -98,7 +98,7 @@ const LoginPage = () => {
           </div>
 
           <a
-            href="http://localhost:5000/api/auth/google"
+            href="https://laundry-app-backend-92wj.onrender.com"
             className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
             <img className="h-5 w-5 mr-2" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google logo" />
