@@ -1,7 +1,6 @@
 // src/components/HomePage.js
 import React from 'react';
 import Header from './common/Header'; // Corrected Path
-import Footer from './common/Footer'; // Corrected Path
 import ServiceCard from './ServiceCard'; // Corrected Path
 
 // You can replace these with your actual data and image paths
