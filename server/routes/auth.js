@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs'); // Needed for password hashing
 const jwt = require('jsonwebtoken'); // Needed for JWT token generation
-const passport = require('passport'); // Needed for Google OAuth
 const User = require('../models/User'); // Your User model
 
 // --- MANUAL REGISTRATION ROUTE ---
@@ -64,7 +63,6 @@ router.post('/login', async (req, res) => {
     }
 
     // 2. Compare entered password with hashed password in DB
-    // Use bcrypt.compare to check if the plain password matches the hashed one
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ msg: 'Invalid Credentials' });
@@ -92,27 +90,5 @@ router.post('/login', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-// --- GOOGLE OAUTH ROUTES (These remain the same) ---
-
-// 1. Route to start the Google authentication process
-router.get('/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-
-// 2. Callback route that Google redirects to after user logs in
-router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login', session: false }),
-  (req, res) => {
-    // User is authenticated by this point (from passport-setup.js)
-    // Now, create a JWT token for them
-    const payload = { user: { id: req.user.id } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    // Redirect user to the frontend, passing the token as a query parameter
-    // Remember to replace 'http://localhost:3000' with your live Netlify URL after deployment
-    res.redirect(`https://reactlaundry-project.netlify.app/auth/callback?token=${token}`);
-  }
-);
 
 module.exports = router;

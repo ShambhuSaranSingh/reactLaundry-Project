@@ -6,10 +6,6 @@ const passport = require('passport'); // Add this line
 
 const app = express();
 
-// Initialize Passport
-require('./config/passport-setup'); // Add this line
-app.use(passport.initialize()); // Add this line
-
 // Middleware
 app.use(cors());
 app.set('trust proxy', 1);

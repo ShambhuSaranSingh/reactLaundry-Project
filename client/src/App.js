@@ -10,14 +10,12 @@ import ProductGalleryPage from './components/ProductGalleryPage';
 import AboutPage from './components/AboutPage';
 import FeedbackPage from './components/FeedbackPage';
 import SelectItemsPage from './components/SelectItemsPage';
-import AuthCallback from './components/AuthCallback';
 
 function App() {
   return (
     <Router>
       <Routes>
         {/* PUBLIC ROUTES: Anyone can see these pages. */}
-        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
