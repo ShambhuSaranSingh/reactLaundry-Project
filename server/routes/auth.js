@@ -1,63 +1,45 @@
-const express = require('express');
-const router = express.Router();
-const bcrypt = require('bcryptjs'); // Needed for password hashing
-const jwt = require('jsonwebtoken'); // Needed for JWT token generation
-const User = require('../models/User'); // Your User model
-
 // --- MANUAL REGISTRATION ROUTE ---
 router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+  const { name, email, phone, password } = req.body;
 
   try {
-    // 1. Check if user already exists
-    let user = await User.findOne({ username });
+    // 1. Check if user already exists (now by email)
+    let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ msg: 'User already exists' });
+      return res.status(400).json({ msg: 'User with this email already exists' });
     }
 
-    // 2. Create a new user instance
+    // 2. Create a new user instance with all fields
     user = new User({
-      username,
-      password, // Temporarily store plain password before hashing
+      name,
+      email,
+      phone,
+      password // Temporarily store plain password
     });
 
     // 3. Hash password
-    const salt = await bcrypt.genSalt(10); // Generate a salt
-    user.password = await bcrypt.hash(password, salt); // Hash the password with the salt
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
 
     // 4. Save the new user to the database
     await user.save();
 
-    // 5. Generate a JWT token for immediate login upon successful registration
-    const payload = {
-      user: {
-        id: user.id, // User ID from the database
-      },
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }, // Token expires in 1 hour
-      (err, token) => {
-        if (err) throw err; // If error, throw it
-        res.json({ token }); // Send the token back to the client
-      }
-    );
+    // 5. Send success message ONLY (Frontend will handle the redirect to Login)
+    res.status(201).json({ msg: 'Registration successful! You can now log in.' });
 
   } catch (err) {
-    console.error(err.message); // Log the detailed error on the server
-    res.status(500).send('Server error'); // Send a generic server error response
+    console.error(err.message);
+    res.status(500).send('Server error');
   }
 });
 
 // --- MANUAL LOGIN ROUTE ---
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body; // Changed from username to email
 
   try {
-    // 1. Check if user exists
-    let user = await User.findOne({ username });
+    // 1. Check if user exists by email
+    let user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ msg: 'Invalid Credentials' });
     }
@@ -68,12 +50,8 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid Credentials' });
     }
 
-    // 3. Generate a JWT token for the logged-in user
-    const payload = {
-      user: {
-        id: user.id, // User ID from the database
-      },
-    };
+    // 3. Generate a JWT token
+    const payload = { user: { id: user.id } };
 
     jwt.sign(
       payload,
@@ -81,7 +59,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token }); // Send the token back to the client
+        res.json({ token });
       }
     );
 
@@ -90,5 +68,3 @@ router.post('/login', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-module.exports = router;

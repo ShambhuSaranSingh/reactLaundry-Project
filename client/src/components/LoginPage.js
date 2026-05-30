@@ -1,113 +1,117 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import './LoginPage.css'; // For the animation
+import { useNavigate, Link } from 'react-router-dom';
 
 const LoginPage = () => {
-  // This one state controls everything:
-  // if true, show Login; if false, show Sign Up.
-  const [isLoginView, setIsLoginView] = useState(true);
-
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Determine the API endpoint based on the view
-    const endpoint = isLoginView ? '/api/auth/login' : '/api/auth/register';
-    const payload = { username, password };
+    setError(''); // Clear any previous errors
 
     try {
-      if (isLoginView) {
-        // --- Login Logic ---
-        const res = await axios.post(endpoint, payload);
-        sessionStorage.setItem('token', res.data.token);
-        alert('Login successful!');
-        navigate('/');
-      } else {
-        // --- Register Logic ---
-        await axios.post(endpoint, payload);
-        alert('Registration successful! Please log in.');
-        setIsLoginView(true); // Switch back to login view after successful registration
-      }
+      // Send login request to your Render backend
+      const response = await axios.post('/api/auth/login', formData);
+
+      // Save the JWT token to localStorage so the user stays logged in
+      localStorage.setItem('token', response.data.token);
+
+      // Redirect the user to the Home page or Dashboard after successful login
+      navigate('/'); 
+      
+      // Optional: If you have a way to update the app's logged-in state, do it here.
+      // window.location.reload(); // Simple way to force app to recognize token
+
     } catch (err) {
-      alert('Error: ' + (err.response?.data?.msg || 'Something went wrong'));
+      // If the backend sends an error (like "Invalid Credentials"), show it
+      setError(err.response?.data?.msg || 'Login failed. Please check your credentials.');
     }
   };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left Side - Animated Title */}
-      <div className="hidden lg:flex w-1/2 items-center justify-center bg-gradient-to-br from-blue-600 to-cyan-400 p-12 text-white">
-        <div className="text-center">
-          <h1 className="text-6xl font-extrabold tracking-tight animate-fade-in-down">
-            Modern Laundry System
-          </h1>
-        </div>
-      </div>
-
-      {/* Right Side - The Form Container */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-gray-100">
-        <div className="w-full max-w-sm p-8 space-y-6 bg-white rounded-lg shadow-md">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-blue-600">Laundry System</h1>
-            {/* The heading changes based on the view */}
-            <h2 className="text-xl font-semibold text-gray-700">
-              {isLoginView ? 'Login' : 'Create Account'}
-            </h2>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <input
-                name="username"
-                type="text"
-                required
-                placeholder="Username"
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <input
-                name="password"
-                type="password"
-                required
-                placeholder="Password"
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              {/* The button text changes based on the view */}
-              <button
-                type="submit"
-                className="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-lg hover:bg-blue-600"
-              >
-                {isLoginView ? 'Log In' : 'Sign Up'}
-              </button>
-            </div>
-          </form>
-
-          <div className="relative flex py-5 items-center">
-            <div className="flex-grow border-t border-gray-300"></div>
-            <span className="flex-shrink mx-4 text-gray-400">Or</span>
-            <div className="flex-grow border-t border-gray-300"></div>
-          </div>
-
-          <p className="text-sm text-center text-gray-600">
-            {isLoginView ? "Don't have an account?" : "Already have an account?"}{' '}
-            {/* This button just toggles the 'isLoginView' state */}
-            <button
-              onClick={() => setIsLoginView(!isLoginView)}
-              className="font-medium text-blue-500 hover:underline"
-            >
-              {isLoginView ? 'Sign Up' : 'Log In'}
-            </button>
+    <div className="min-h-screen flex items-center justify-center bg-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-md">
+        
+        {/* Header Section */}
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Welcome Back
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Log in to manage your laundry orders
           </p>
         </div>
+
+        {/* Error Message Display */}
+        {error && (
+          <div className="bg-red-100 text-red-700 p-3 rounded text-center text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Login Form */}
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm space-y-4">
+            
+            {/* Email Field */}
+            <div>
+              <label className="sr-only">Email address</label>
+              <input 
+                name="email" 
+                type="email" 
+                required
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="Email address"
+                value={formData.email} 
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Password Field */}
+            <div>
+              <label className="sr-only">Password</label>
+              <input 
+                name="password" 
+                type="password" 
+                required
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="Password"
+                value={formData.password} 
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div>
+            <button 
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Log In
+            </button>
+          </div>
+        </form>
+
+        {/* Link to Signup Page */}
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{' '}
+            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+              Sign up here
+            </Link>
+          </p>
+        </div>
+
       </div>
     </div>
   );
