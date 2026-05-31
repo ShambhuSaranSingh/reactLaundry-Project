@@ -3,8 +3,8 @@ import { Navigate } from 'react-router-dom';
 
 // This component is our "security guard"
 const ProtectedRoute = ({ children }) => {
-  // Check if the user's "keycard" (token) exists in the browser's storage
-  const token = sessionStorage.getItem('token');
+  // Check if the user's "keycard" (token) exists in localStorage
+  const token = localStorage.getItem('token'); // <-- CHANGED HERE
 
   if (!token) {
     // If there is NO keycard, redirect the user to the login page
