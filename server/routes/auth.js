@@ -1,3 +1,10 @@
+// --- MISSING TOP LINES YOU NEED ---
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User'); // Make sure this path to your User model is correct
+
 // --- MANUAL REGISTRATION ROUTE ---
 router.post('/register', async (req, res) => {
   const { name, email, phone, password } = req.body;
@@ -68,3 +75,6 @@ router.post('/login', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+// --- MISSING BOTTOM LINE YOU NEED ---
+module.exports = router;
