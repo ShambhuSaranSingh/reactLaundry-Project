@@ -26,7 +26,7 @@ const LoginPage = () => {
       localStorage.setItem('token', response.data.token);
 
       // Redirect the user to the Home page or Dashboard after successful login
-      navigate('/'); 
+      navigate('/dashboard'); 
       
       // Optional: If you have a way to update the app's logged-in state, do it here.
       // window.location.reload(); // Simple way to force app to recognize token
