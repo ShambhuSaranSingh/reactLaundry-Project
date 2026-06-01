@@ -25,6 +25,9 @@ const LoginPage = () => {
       // Save the JWT token to localStorage so the user stays logged in
       localStorage.setItem('token', response.data.token);
 
+      // 👇 ADDED: Save the User Details (we have to stringify it because localStorage only holds text)
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
       // Redirect the user to the Home page or Dashboard after successful login
       navigate('/dashboard'); 
       
